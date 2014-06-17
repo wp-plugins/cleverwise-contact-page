@@ -2,7 +2,7 @@
 /**
 * Plugin Name: Cleverwise Contact Page
 * Description: Creates a professional contact page including web form (unlimited subjects & departments), emails, phones, faxes, hours, addresses.
-* Version: 1.0
+* Version: 1.1
 * Author: Jeremy O'Connell
 * Author URI: http://www.cyberws.com/cleverwise-plugins/
 * License: GPL2 .:. http://opensource.org/licenses/GPL-2.0
@@ -19,7 +19,7 @@ $cwfa_cp=new cwfa_cp;
 ////////////////////////////////////////////////////////////////////////////
 Global $wpdb,$cp_wp_option_version_txt,$cp_wp_option,$cp_wp_option_version_num;
 
-$cp_wp_option_version_num='1.0';
+$cp_wp_option_version_num='1.1';
 $cp_wp_option='contact_page';
 $cp_wp_option_version_txt=$cp_wp_option.'_version';
 
@@ -50,7 +50,7 @@ add_shortcode('cw_contact_page', 'cw_contact_page_vside');
 //	Visitor Display
 ////////////////////////////////////////////////////////////////////////////
 function cw_contact_page_vside() {
-Global $wpdb,$cp_wp_option;
+Global $wpdb,$cp_wp_option,$cwfa_cp;
 
 	////////////////////////////////////////////////////////////////////////////
 	//	Load data from wp db
@@ -72,20 +72,20 @@ Global $wpdb,$cp_wp_option;
 	$cp_inc_ip=$cp_wp_option_array['cp_inc_ip'];
 	$cp_inc_agent=$cp_wp_option_array['cp_inc_agent'];
 
-	$cp_frm_title=$cp_wp_option_array['cp_frm_title'];
-	$cp_frm_email=$cp_wp_option_array['cp_frm_email'];
-	$cp_frm_name=$cp_wp_option_array['cp_frm_name'];
-	$cp_frm_topic=$cp_wp_option_array['cp_frm_topic'];
-	$cp_frm_comments=$cp_wp_option_array['cp_frm_comments'];
-	$cp_frm_submit=$cp_wp_option_array['cp_frm_submit'];
-	$cp_frm_css_text=$cp_wp_option_array['cp_frm_css_text'];
-	$cp_frm_css_select=$cp_wp_option_array['cp_frm_css_select'];
-	$cp_frm_css_submit=$cp_wp_option_array['cp_frm_css_submit'];
-	$cp_error_fields_msg=$cp_wp_option_array['cp_error_fields_msg'];
-	$cp_error_technical_msg=$cp_wp_option_array['cp_error_technical_msg'];
-	$cp_error_layout=stripslashes($cp_wp_option_array['cp_error_layout']);
-	$cp_success_layout=stripslashes($cp_wp_option_array['cp_success_layout']);
-	$cp_frm_info_layout=$cp_wp_option_array['cp_frm_info_layout'];
+	$cp_frm_title=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_title']);
+	$cp_frm_email=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_email']);
+	$cp_frm_name=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_name']);
+	$cp_frm_topic=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_topic']);
+	$cp_frm_comments=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_comments']);
+	$cp_frm_submit=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_submit']);
+	$cp_frm_css_text=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_text']);
+	$cp_frm_css_select=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_select']);
+	$cp_frm_css_submit=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_submit']);
+	$cp_error_fields_msg=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_error_fields_msg']);
+	$cp_error_technical_msg=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_error_technical_msg']);
+	$cp_error_layout=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_error_layout']);
+	$cp_success_layout=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_success_layout']);
+	$cp_frm_info_layout=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_info_layout']);
 
 	$cp_mail_server=$cp_wp_option_array['cp_mail_server'];
 	$cp_mail_port=$cp_wp_option_array['cp_mail_port'];
@@ -102,11 +102,11 @@ Global $wpdb,$cp_wp_option;
 	////////////////////////////////////////////////////////////////////////////
 
 	if ($_REQUEST['cw_action'] == 'send') {
-		$cw_email=$_REQUEST['cw_email'];
-		$cw_name=$_REQUEST['cw_name'];
-		$cp_topic_box=$_REQUEST[$cp_frm_topic_box];
-		$cw_comments=trim($_REQUEST['cw_comments']);
-		$cp_frm_error_msg=$cp_wp_option_array['cp_frm_error_msg'];
+		$cw_email=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cw_email']);
+		$cw_name=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cw_name']);
+		$cp_topic_box=$cwfa_cp->cwf_fmt_striptrim($_REQUEST[$cp_frm_topic_box]);
+		$cw_comments=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cw_comments']);
+		$cp_frm_error_msg=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_error_msg']);
 
 		$error='';
 
@@ -221,11 +221,6 @@ Global $wpdb,$cp_wp_option;
 			$cp_email=str_replace("<ascii>$cp_email_convert</ascii>",$cp_email_ascii,$cp_email);
 		}
 	}
-	//	Add check for protect
-//	$cp_email=cw_contact_page_strtoascii($cp_email);
-//	$cp_email=preg_replace('/&#13;&#10;/','<br>',$cp_email);
-//	$cp_email=preg_replace('/&#60;&#98;&#62;/','<b>',$cp_email);
-//	$cp_email=preg_replace('/&#60;&#47;&#98;&#62;/','</b>',$cp_email);
 
 $contact_page .=<<<EOM
 <style>

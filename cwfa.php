@@ -2,6 +2,7 @@
 /*
 * Copyright 2014 Jeremy O'Connell  (email : cwplugins@cyberws.com)
 * License: GPL2 .:. http://opensource.org/licenses/GPL-2.0
+* Version 1.2
 */
 	
 ////////////////////////////////////////////////////////////////////////////
@@ -146,6 +147,13 @@ class cwfa_cp {
 	//	v: 1.1
 	function cwf_fmt_sth($value) {
 		$value=preg_replace('/\s/','-',$value);
+		return $value;
+	}
+
+	//	Stripe slashes and trim
+	//	v: 1.2
+	function cwf_fmt_striptrim($value) {
+		$value=trim(stripslashes($value));
 		return $value;
 	}
 	

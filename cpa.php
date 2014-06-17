@@ -76,20 +76,20 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 	if ($cw_action == 'llsettings') {
 		$cw_contact_page_action='Language & Layouts';
 
-		$cp_frm_title=$cp_wp_option_array['cp_frm_title'];
-		$cp_frm_email=$cp_wp_option_array['cp_frm_email'];
-		$cp_frm_name=$cp_wp_option_array['cp_frm_name'];
-		$cp_frm_topic=$cp_wp_option_array['cp_frm_topic'];
-		$cp_frm_comments=$cp_wp_option_array['cp_frm_comments'];
-		$cp_frm_submit=$cp_wp_option_array['cp_frm_submit'];
-		$cp_frm_css_text=$cp_wp_option_array['cp_frm_css_text'];
-		$cp_frm_css_select=$cp_wp_option_array['cp_frm_css_select'];
-		$cp_frm_css_submit=$cp_wp_option_array['cp_frm_css_submit'];
-		$cp_error_fields_msg=stripslashes($cp_wp_option_array['cp_error_fields_msg']);
-		$cp_error_technical_msg=stripslashes($cp_wp_option_array['cp_error_technical_msg']);
-		$cp_error_layout=stripslashes($cp_wp_option_array['cp_error_layout']);
-		$cp_success_layout=stripslashes($cp_wp_option_array['cp_success_layout']);
-		$cp_frm_info_layout=$cp_wp_option_array['cp_frm_info_layout'];
+		$cp_frm_title=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_title']);
+		$cp_frm_email=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_email']);
+		$cp_frm_name=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_name']);
+		$cp_frm_topic=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_topic']);
+		$cp_frm_comments=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_comments']);
+		$cp_frm_submit=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_submit']);
+		$cp_frm_css_text=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_text']);
+		$cp_frm_css_select=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_select']);
+		$cp_frm_css_submit=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_submit']);
+		$cp_error_fields_msg=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_error_fields_msg']);
+		$cp_error_technical_msg=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_error_technical_msg']);
+		$cp_error_layout=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_error_layout']);
+		$cp_success_layout=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_success_layout']);
+		$cp_frm_info_layout=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_info_layout']);
 
 		if (!$cp_frm_title) {
 			$cp_frm_title=$cp_frm_title_def;
@@ -197,9 +197,9 @@ EOM;
 		$cp_frm_css_submit=$cwfa_cp->cwf_san_alls($_REQUEST['cp_frm_css_submit']);
 		$cp_error_fields_msg=$cwfa_cp->cwf_san_alls($_REQUEST['cp_error_fields_msg']);
 		$cp_error_technical_msg=$cwfa_cp->cwf_san_alls($_REQUEST['cp_error_technical_msg']);
-		$cp_error_layout=trim($_REQUEST['cp_error_layout']);
-		$cp_success_layout=trim($_REQUEST['cp_success_layout']);
-		$cp_frm_info_layout=trim($_REQUEST['cp_frm_info_layout']);
+		$cp_error_layout=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_error_layout']);
+		$cp_success_layout=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_success_layout']);
+		$cp_frm_info_layout=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_frm_info_layout']);
 
 		$error='';
 
@@ -469,6 +469,10 @@ EOM;
 
 $cw_contact_page_html .=<<<EOM
 <p>The following lists the new changes from version-to-version.</p>
+<p>Version: <b>1.1</b></p>
+<ul style="list-style: disc; margin-left: 25px;">
+<li>Fixed: Backslash was appearing when certain characters were used.</li>
+</ul>
 <p>Version: <b>1.0</b></p>
 <ul style="list-style: disc; margin-left: 25px;">
 <li>Initial release of plugin</li>
@@ -508,14 +512,14 @@ EOM;
 	////////////////////////////////////////////////////////////////////////////
 	} elseif ($cw_action == 'settingsv') {
 		$cp_organization=$cwfa_cp->cwf_san_all($_REQUEST['cp_organization']);
-		$cp_topics=trim(strip_tags($_REQUEST['cp_topics']));
-		$cp_address=trim($_REQUEST['cp_address']);
-		$cp_email=trim($_REQUEST['cp_email']);
-		$cp_hours=trim($_REQUEST['cp_hours']);
-		$cp_phone=trim($_REQUEST['cp_phone']);
-		$cp_fax=trim($_REQUEST['cp_fax']);
-		$cp_inc_ip=trim($_REQUEST['cp_inc_ip']);
-		$cp_inc_agent=trim($_REQUEST['cp_inc_agent']);
+		$cp_topics=$cwfa_cp->cwf_fmt_striptrim(strip_tags($_REQUEST['cp_topics']));
+		$cp_address=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_address']);
+		$cp_email=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_email']);
+		$cp_hours=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_hours']);
+		$cp_phone=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_phone']);
+		$cp_fax=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_fax']);
+		$cp_inc_ip=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_inc_ip']);
+		$cp_inc_agent=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_inc_agent']);
 
 		$error='';
 
