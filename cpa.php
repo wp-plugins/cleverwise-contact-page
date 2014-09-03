@@ -345,7 +345,7 @@ EOM;
 		}
 
 		$cp_mail_conn_type_options=array('standard','ssl','tls');
-		isset($cp_mail_conn_type_list);
+		$cp_mail_conn_type_list='';
 		foreach ($cp_mail_conn_type_options as $cp_mail_conn_type_option) {
 			$cp_mail_conn_type_list .='<option value="'.$cp_mail_conn_type_option.'"';
 			if ($cp_mail_conn_type_option == $cp_mail_conn_type) {
@@ -469,6 +469,10 @@ EOM;
 
 $cw_contact_page_html .=<<<EOM
 <p>The following lists the new changes from version-to-version.</p>
+<p>Version: <b>1.2</b></p>
+<ul style="list-style: disc; margin-left: 25px;">
+<li>Background edits to eliminate some PHP notice messages</li>
+</ul>
 <p>Version: <b>1.1</b></p>
 <ul style="list-style: disc; margin-left: 25px;">
 <li>Fixed: Backslash was appearing when certain characters were used.</li>

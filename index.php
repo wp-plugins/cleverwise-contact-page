@@ -2,7 +2,7 @@
 /**
 * Plugin Name: Cleverwise Contact Page
 * Description: Creates a professional contact page including web form (unlimited subjects & departments), emails, phones, faxes, hours, addresses.
-* Version: 1.1
+* Version: 1.2
 * Author: Jeremy O'Connell
 * Author URI: http://www.cyberws.com/cleverwise-plugins/
 * License: GPL2 .:. http://opensource.org/licenses/GPL-2.0
@@ -19,7 +19,7 @@ $cwfa_cp=new cwfa_cp;
 ////////////////////////////////////////////////////////////////////////////
 Global $wpdb,$cp_wp_option_version_txt,$cp_wp_option,$cp_wp_option_version_num;
 
-$cp_wp_option_version_num='1.1';
+$cp_wp_option_version_num='1.2';
 $cp_wp_option='contact_page';
 $cp_wp_option_version_txt=$cp_wp_option.'_version';
 
@@ -95,13 +95,13 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 	$cp_frm_topic_box=$cp_wp_option_array['cp_frm_topic_box'];
 	$cp_frm_honeypot=$cp_wp_option_array['cp_frm_honeypot'];
 
-	isset($cp_topic_box);
+	$cp_topic_box='';
 
 	////////////////////////////////////////////////////////////////////////////
 	//	Process Email
 	////////////////////////////////////////////////////////////////////////////
 
-	if ($_REQUEST['cw_action'] == 'send') {
+	if (isset($_REQUEST['cw_action']) and $_REQUEST['cw_action'] == 'send') {
 		$cw_email=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cw_email']);
 		$cw_name=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cw_name']);
 		$cp_topic_box=$cwfa_cp->cwf_fmt_striptrim($_REQUEST[$cp_frm_topic_box]);
@@ -128,7 +128,7 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 			}
 			unset($cp_topic_box_details);
 		}
-		if (!$cw_cp_to_email) {
+		if (!isset($cw_cp_to_email)) {
 			$error .="<li>$cp_frm_topic</li>";
 		}
 
@@ -136,12 +136,13 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 			$error .="<li>$cp_frm_comments</li>";
 		}
 
-		$cw_cp_body=$cp_frm_title.' :: '.$cw_cp_subject."\n\n".$cw_comments."\n\n".$cw_name;
-		$cw_cp_subject=trim($cw_cp_subject);
-		$cw_cp_to_email=trim($cw_cp_to_email);
-
 		if (!$error) {
-			isset($cp_inc_extras);
+		
+			$cw_cp_body=$cp_frm_title.' :: '.$cw_cp_subject."\n\n".$cw_comments."\n\n".$cw_name;
+			$cw_cp_subject=trim($cw_cp_subject);
+			$cw_cp_to_email=trim($cw_cp_to_email);
+		
+			$cp_inc_extras='';
 			if ($cp_inc_ip == '1') {
 				$cw_cp_body .="\n\n========================================\n";
 				if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -222,6 +223,7 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 		}
 	}
 
+$contact_page='';
 $contact_page .=<<<EOM
 <style>
 @media only screen and (min-width: 610px) {
@@ -240,6 +242,7 @@ display: block;
 </div>
 EOM;
 
+$contact_form='';
 $contact_form .=<<<EOM
 <p><b>$cp_frm_title</b></p>
 <form method="post" style="padding: 0px; margin: 0px;">
@@ -291,7 +294,7 @@ function cw_contact_page_strtoascii($input) {
 
 //////	Mailout
 function cw_contact_page_mailout($cw_cp_to_email,$cw_email,$cw_cp_subject,$cw_cp_body,$cp_mail_server,$cp_mail_port,$cp_mail_conn_type,$cp_mail_email,$cp_mail_passwd) {
-	if (!function_exists(PHPMailer)) {
+	if (!function_exists('PHPMailer')) {
 		require_once('class.smtp.php');
 		require_once('class.phpmailer.php');
 	}
