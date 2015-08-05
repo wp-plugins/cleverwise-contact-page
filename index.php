@@ -114,11 +114,11 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 		$error='';
 
 		if (substr_count($cw_email,'@') != '1' and substr_count($cw_email,'.') < '1') {
-			$error .="<li>$cp_frm_email</li>";
+			$error .="<li>$cp_frm_email_def</li>";
 		}
 
-		if (!$cw_name or $cw_name == $cp_frm_name) {
-			$error .="<li>$cp_frm_name</li>";
+		if (!$cw_name or $cw_name == $cp_frm_name_def) {
+			$error .="<li>$cp_frm_name_def</li>";
 		}
 
 		if (is_numeric($cp_topic_box)) {
@@ -135,8 +135,8 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 			$error .="<li>$cp_frm_topic</li>";
 		}
 
-		if (!$cw_comments or $cw_comments == $cp_frm_comments) {
-			$error .="<li>$cp_frm_comments</li>";
+		if (!$cw_comments or $cw_comments == $cp_frm_comments_def) {
+			$error .="<li>$cp_frm_comments_def</li>";
 		}
 		
 		if (isset ($cp_google_recaptcha_site_key) and isset($cp_google_recaptcha_secret_key)) {
