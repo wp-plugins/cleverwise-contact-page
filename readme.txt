@@ -3,8 +3,8 @@ Contributors: cyberws
 Donate link: http://www.cyberws.com/cleverwise-plugins/
 Tags: contact, page, email, form
 Requires at least: 3.0.1
-Tested up to: 4.2.1
-Stable tag: 1.2
+Tested up to: 4.2.4
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ Creates a professional contact page including web form (unlimited subjects & dep
 
 <p>Now let's turn our attention toward the web form.  This plugin will display a web form on the page so your visitors can easily send you email.  You are able to setup unlimited topics/subjects with each topic being sent to an email address.  So for example you could have "Technical Support", "Billing Questions", "Website Feedback", etc.  As stated there is no limit and each topic will map (or go) to an email address.  If you are wondering you can repeat email addresses if desired.</p>
 
-<p>This form has been designed to protect you from bots.  For starters none of the email addresses listed with the topics are displayed anywhere on the page or in its code.  Thus bots will find no email accounts to add to their spam list.  Second an unique name is generated for the topic field to prevent common field names and make it harder for bots.  Third there are fake fields to fool bots.  This works because many bots will fill out all fields in a form, which will cause the form to error out.  All this is done without annoying captchas and is transparent to your visitors.</p>
+<p>This form has been designed to protect you from bots.  For starters none of the email addresses listed with the topics are displayed anywhere on the page or in its code.  Thus bots will find no email accounts to add to their spam list.  Second an unique name is generated for the topic field to prevent common field names and make it harder for bots.  Third there are fake fields to fool bots.  This works because many bots will fill out all fields in a form, which will cause the form to error out.  Finally Google's just click a box reCAPTCHA program is supported for enhanced bot fighting and is optional.  All this is done without those annoying hard to read captcha images!</p>
 
 <p>The plugin allows you to change/alter the text in the web form and messages displayed by the system.  This way if you use a language other than English or simply want to alter the text to fit your style go for it! Also if the error and success message blocks don't match your site's design concept you are easily able to edit the html code.  You even have the ability to custom set the CSS class names used for the textboxes, select list, and submit button!</p>
 
@@ -55,6 +55,11 @@ This plugin deploys Anti-Spam/Bot technology using several methods.  First key f
 
 == Changelog ==
 
+= 1.3 =
+Now supports Google's reCAPTCHA program for enhanced anti-spam<br>
+Added site name to email to help with those maintaining multiple sites at same email address<br>
+Fixed: Clearing of user typed data in form when reselecting
+
 = 1.2 =
 Background edits to eliminate some PHP notice messages
 
@@ -67,4 +72,4 @@ Initial release of plugin
 == Upgrade Notice ==
 
 = 1.2 =
-Background code edits to reduce notice messages in server logs.
+Added Google's reCAPTCHA support plus site name in email along with fixed form clearing error.

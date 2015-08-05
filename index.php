@@ -2,7 +2,7 @@
 /**
 * Plugin Name: Cleverwise Contact Page
 * Description: Creates a professional contact page including web form (unlimited subjects & departments), emails, phones, faxes, hours, addresses.
-* Version: 1.2
+* Version: 1.3
 * Author: Jeremy O'Connell
 * Author URI: http://www.cyberws.com/cleverwise-plugins/
 * License: GPL2 .:. http://opensource.org/licenses/GPL-2.0
@@ -19,7 +19,7 @@ $cwfa_cp=new cwfa_cp;
 ////////////////////////////////////////////////////////////////////////////
 Global $wpdb,$cp_wp_option_version_txt,$cp_wp_option,$cp_wp_option_version_num;
 
-$cp_wp_option_version_num='1.2';
+$cp_wp_option_version_num='1.3';
 $cp_wp_option='contact_page';
 $cp_wp_option_version_txt=$cp_wp_option.'_version';
 
@@ -73,10 +73,10 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 	$cp_inc_agent=$cp_wp_option_array['cp_inc_agent'];
 
 	$cp_frm_title=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_title']);
-	$cp_frm_email=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_email']);
-	$cp_frm_name=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_name']);
+	$cp_frm_email_def=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_email']);
+	$cp_frm_name_def=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_name']);
 	$cp_frm_topic=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_topic']);
-	$cp_frm_comments=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_comments']);
+	$cp_frm_comments_def=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_comments']);
 	$cp_frm_submit=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_submit']);
 	$cp_frm_css_text=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_text']);
 	$cp_frm_css_select=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_select']);
@@ -94,7 +94,9 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 	$cp_mail_passwd=$cp_wp_option_array['cp_mail_passwd'];
 	$cp_frm_topic_box=$cp_wp_option_array['cp_frm_topic_box'];
 	$cp_frm_honeypot=$cp_wp_option_array['cp_frm_honeypot'];
-
+	$cp_google_recaptcha_site_key=$cp_wp_option_array['cp_google_recaptcha_site_key'];
+	$cp_google_recaptcha_secret_key=$cp_wp_option_array['cp_google_recaptcha_secret_key'];
+	
 	$cp_topic_box='';
 
 	////////////////////////////////////////////////////////////////////////////
@@ -107,7 +109,8 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 		$cp_topic_box=$cwfa_cp->cwf_fmt_striptrim($_REQUEST[$cp_frm_topic_box]);
 		$cw_comments=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cw_comments']);
 		$cp_frm_error_msg=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_error_msg']);
-
+		$cp_frm_captcha=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_captcha']);
+		
 		$error='';
 
 		if (substr_count($cw_email,'@') != '1' and substr_count($cw_email,'.') < '1') {
@@ -135,16 +138,46 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 		if (!$cw_comments or $cw_comments == $cp_frm_comments) {
 			$error .="<li>$cp_frm_comments</li>";
 		}
+		
+		if (isset ($cp_google_recaptcha_site_key) and isset($cp_google_recaptcha_secret_key)) {
+			$cw_cp_google_captcha_response=trim($_REQUEST['g-recaptcha-response']);
+
+			$cw_cp_google_fields='secret='.urlencode($cp_google_recaptcha_secret_key).'&response='.urlencode($cw_cp_google_captcha_response);
+			
+			$cw_cp_google_captcha_status='1';
+			
+			if (isset($cw_cp_google_captcha_response)) {
+				if (function_exists(curl_setopt)) {
+					$cw_cp_curl_handle=curl_init();
+					curl_setopt($cw_cp_curl_handle,CURLOPT_URL,'https://www.google.com/recaptcha/api/siteverify');
+					curl_setopt($cw_cp_curl_handle,CURLOPT_POST,1);
+					curl_setopt($cw_cp_curl_handle,CURLOPT_POSTFIELDS,$cw_cp_google_fields);
+					curl_setopt($cw_cp_curl_handle,CURLOPT_CONNECTTIMEOUT,5);
+					curl_setopt($cw_cp_curl_handle,CURLOPT_RETURNTRANSFER,1);
+					$cw_cp_google_json=curl_exec($cw_cp_curl_handle);
+				} else {	
+					$cw_cp_google_url='https://www.google.com/recaptcha/api/siteverify?'.$cw_cp_google_fields;
+					$cw_cp_google_json=file_get_contents("$cw_cp_google_url");
+				}
+				$cw_cp_google_json=json_decode($cw_cp_google_json);
+			}
+
+			$cw_cp_google_captcha_status=$cw_cp_google_json->success;
+			if ($cw_cp_google_captcha_status != 'true') {
+				$error .="<li>$cp_frm_captcha</li>";
+			}
+		}
 
 		if (!$error) {
 		
 			$cw_cp_body=$cp_frm_title.' :: '.$cw_cp_subject."\n\n".$cw_comments."\n\n".$cw_name;
+			$cw_cp_body .="\n\n========================================\n";
+			$cw_cp_body .='* '.get_bloginfo('name')." *\n";
 			$cw_cp_subject=trim($cw_cp_subject);
 			$cw_cp_to_email=trim($cw_cp_to_email);
 		
 			$cp_inc_extras='';
 			if ($cp_inc_ip == '1') {
-				$cw_cp_body .="\n\n========================================\n";
 				if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
 					$cp_inc_ip=$_SERVER['HTTP_CLIENT_IP'];
 				//	to check ip is pass from proxy
@@ -159,12 +192,11 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 			if ($cp_inc_agent == '1') {
 				if ($cp_inc_extras == '1') {
 					$cw_cp_body .=' :: ';
-				} else {
-					$cw_cp_body .="\n\n========================================\n";
 				}
 				$cw_cp_body .=$_SERVER['HTTP_USER_AGENT'];
 			}
 			unset($cp_inc_extras);
+			$cw_cp_body .="\n";
 
 			$cw_cp_body .="\n\n";
 			$cw_cp_mail_status=cw_contact_page_mailout($cw_cp_to_email,$cw_email,$cw_cp_subject,$cw_cp_body,$cp_mail_server,$cp_mail_port,$cp_mail_conn_type,$cp_mail_email,$cp_mail_passwd);
@@ -242,15 +274,33 @@ display: block;
 </div>
 EOM;
 
+	if (!$cp_frm_email) {
+		$cp_frm_email=$cp_frm_email_def;
+	}
+	if (!$cp_frm_name) {
+		$cp_frm_name=$cp_frm_name_def;
+	}
+	if (!$cp_frm_comments) {
+		$cp_frm_comments=$cp_frm_comments_def;
+	}
+	
 $contact_form='';
 $contact_form .=<<<EOM
 <p><b>$cp_frm_title</b></p>
 <form method="post" style="padding: 0px; margin: 0px;">
 <input type="hidden" name="cw_action" value="send">
-<p><input type="text" class="$cp_frm_css_text" name="cw_email" value="$cp_frm_email" onfocus="if (&#039;$cp_frm_email&#039; === this.value) {this.value = &#039;&#039;;}" onblur="if (&#039;&#039; === this.value) {this.value = &#039;$cp_frm_email&#039;;}" style="width: 275px;"></p>
-<p><input type="text" class="$cp_frm_css_text" name="cw_name" value="$cp_frm_name" onfocus="if (&#039;$cp_frm_name&#039; === this.value) {this.value = &#039;&#039;;}" onblur="if (&#039;&#039; === this.value) {this.value = &#039;$cp_frm_name&#039;;}" style="width: 275px;"></p>
+<p><input type="text" class="$cp_frm_css_text" name="cw_email" value="$cp_frm_email" onfocus="if ('$cp_frm_email_def' === this.value) {this.value = '';}" onblur="if ('' === this.value) {this.value = '$cp_frm_email_def';}" style="width: 275px;"></p>
+<p><input type="text" class="$cp_frm_css_text" name="cw_name" value="$cp_frm_name" onfocus="if ('$cp_frm_name_def' === this.value) {this.value = '';;}" onblur="if ('' === this.value) {this.value = '$cp_frm_name_def';}" style="width: 275px;"></p>
 <p><select name="$cp_frm_topic_box" class="$cp_frm_css_select">$contact_topics</select></p>
-<p><textarea name="cw_comments" onfocus="if (&#039;$cp_frm_comments&#039; === this.value) {this.value = &#039;&#039;;}" onblur="if (&#039;&#039; === this.value) {this.value = &#039;$cp_frm_comments&#039;;}" style="width: 275px; height: 175px;">$cp_frm_comments</textarea></p>
+<p><textarea name="cw_comments" onfocus="if ('$cp_frm_comments_def' === this.value) {this.value = '';}" onblur="if ('' === this.value) {this.value = '$cp_frm_comments_def';}" style="width: 275px; height: 175px;">$cp_frm_comments</textarea></p>
+EOM;
+	
+	if (isset($cp_google_recaptcha_site_key) and isset($cp_google_recaptcha_secret_key)) {
+		$contact_form .='<div class="g-recaptcha" data-sitekey="'.$cp_google_recaptcha_site_key.'"></div><p style="height: 5px;">&nbsp;</p>';
+		wp_enqueue_script('googlerecaptcha','https://www.google.com/recaptcha/api.js');
+		add_action('wp_print_scripts', 'googlerecaptcha');
+	}
+$contact_form .=<<<EOM
 <p><input type="submit" value="$cp_frm_submit" class="$cp_frm_css_submit"></p>
 </form>
 EOM;
@@ -335,3 +385,9 @@ function cw_contact_page_mailout($cw_cp_to_email,$cw_email,$cw_cp_subject,$cw_cp
 
 	return($cw_cp_mail_status);
 }
+
+//////	Load Google reCAPTCHA Javascript
+function cp_google_recaptcha_head_call() {
+    wp_enqueue_script('googlerecaptcha');
+}
+

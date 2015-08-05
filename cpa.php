@@ -61,6 +61,7 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 	$cp_frm_topic_def='Pick A Topic';
 	$cp_frm_comments_def='Enter Comments';
 	$cp_frm_submit_def='Send Message';
+	$cp_frm_captcha_def='Check The I\'m Not A Robot Box';
 	$cp_frm_css_text_def='s';
 	$cp_frm_css_select_def='s';
 	$cp_frm_css_submit_def='submit';
@@ -82,6 +83,7 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 		$cp_frm_topic=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_topic']);
 		$cp_frm_comments=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_comments']);
 		$cp_frm_submit=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_submit']);
+		$cp_frm_captcha=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_captcha']);
 		$cp_frm_css_text=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_text']);
 		$cp_frm_css_select=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_select']);
 		$cp_frm_css_submit=$cwfa_cp->cwf_fmt_striptrim($cp_wp_option_array['cp_frm_css_submit']);
@@ -108,6 +110,9 @@ Global $wpdb,$cp_wp_option,$cwfa_cp;
 		}
 		if (!$cp_frm_submit) {
 			$cp_frm_submit=$cp_frm_submit_def;
+		}
+		if (!$cp_frm_captcha) {
+			$cp_frm_captcha=$cp_frm_captcha_def;
 		}
 
 		if (!$cp_frm_css_text) {
@@ -160,6 +165,7 @@ function disp_layout() {
 <p>Pick A Topic: <input type="text" name="cp_frm_topic" value="$cp_frm_topic" style="width: 300px;"></p>
 <p>Enter Comments: <input type="text" name="cp_frm_comments" value="$cp_frm_comments" style="width: 300px;"></p>
 <p>Submit Button: <input type="text" name="cp_frm_submit" value="$cp_frm_submit" style="width: 300px;"></p>
+<p>Captcha Error: <input type="text" name="cp_frm_captcha" value="$cp_frm_captcha" style="width: 300px;"></p>
 </div>
 <div id="disp_layout" name="disp_layout" style="display: none;">
 <p><b>Layouts:</b></p>
@@ -192,6 +198,7 @@ EOM;
 		$cp_frm_topic=$cwfa_cp->cwf_san_all($_REQUEST['cp_frm_topic']);
 		$cp_frm_comments=$cwfa_cp->cwf_san_all($_REQUEST['cp_frm_comments']);
 		$cp_frm_submit=$cwfa_cp->cwf_san_all($_REQUEST['cp_frm_submit']);
+		$cp_frm_captcha=$cwfa_cp->cwf_san_all($_REQUEST['cp_frm_captcha']);
 		$cp_frm_css_text=$cwfa_cp->cwf_san_alls($_REQUEST['cp_frm_css_text']);
 		$cp_frm_css_select=$cwfa_cp->cwf_san_alls($_REQUEST['cp_frm_css_select']);
 		$cp_frm_css_submit=$cwfa_cp->cwf_san_alls($_REQUEST['cp_frm_css_submit']);
@@ -200,7 +207,7 @@ EOM;
 		$cp_error_layout=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_error_layout']);
 		$cp_success_layout=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_success_layout']);
 		$cp_frm_info_layout=$cwfa_cp->cwf_fmt_striptrim($_REQUEST['cp_frm_info_layout']);
-
+		
 		$error='';
 
 		if (!$cp_frm_title) {
@@ -243,6 +250,13 @@ EOM;
 		}
 		if ($cp_frm_submit == 'default') {
 			$cp_frm_submit=$cp_frm_submit_def;
+		}
+		
+		if (!$cp_frm_captcha) {
+				$error .='<li>No Captcha Error Text</li>';
+		}
+		if ($cp_frm_captcha == 'default') {
+			$cp_frm_captcha=$cp_frm_captcha_def;
 		}
 
 		if (!$cp_frm_css_text) {
@@ -302,6 +316,7 @@ EOM;
 			$cp_wp_option_array['cp_frm_topic']=$cp_frm_topic;
 			$cp_wp_option_array['cp_frm_comments']=$cp_frm_comments;
 			$cp_wp_option_array['cp_frm_submit']=$cp_frm_submit;
+			$cp_wp_option_array['cp_frm_captcha']=$cp_frm_captcha;
 			$cp_wp_option_array['cp_frm_css_text']=$cp_frm_css_text;
 			$cp_wp_option_array['cp_frm_css_select']=$cp_frm_css_select;
 			$cp_wp_option_array['cp_frm_css_submit']=$cp_frm_css_submit;
@@ -336,7 +351,9 @@ EOM;
 		$cp_mail_passwd=$cp_wp_option_array['cp_mail_passwd'];
 		$cp_frm_topic_box=$cp_wp_option_array['cp_frm_topic_box'];
 		$cp_frm_honeypot=$cp_wp_option_array['cp_frm_honeypot'];
-
+		$cp_google_recaptcha_site_key=$cp_wp_option_array['cp_google_recaptcha_site_key'];
+		$cp_google_recaptcha_secret_key=$cp_wp_option_array['cp_google_recaptcha_secret_key'];
+		
 		if (!$cp_mail_port) {
 			$cp_mail_port='25';
 		}
@@ -382,7 +399,7 @@ function disp_spam() {
 <p>Server Connection: <select name="cp_mail_conn_type">$cp_mail_conn_type_list</select></p>
 </div>
 <div id="disp_email" name="disp_email" style="display: none;">
-<p><b>E-mail Account Information:</b><div style="margin-left: 20px;">You need to enter an email address that will be used as the from address plus it must be accessible from the mail server above.</div></p>
+<p><b>E-mail Account Information:</b><div style="margin-left: 20px;">You need to enter an email address that will be used as the from address.  It must be accessible from the mail server listed in these settings.</div></p>
 <p>E-mail Address: <input type="text" name="cp_mail_email" value="$cp_mail_email" style="width: 300px;"></p>
 <p>E-mail Password: <input type="password" name="cp_mail_passwd" value="$cp_mail_passwd" style="width: 300px;"></p>
 </div>
@@ -390,6 +407,14 @@ function disp_spam() {
 <p><b>Anti-Spam Settings:</b><div style="margin-left: 20px;">These are form value names that trip up SPAM bots.  If you start having SPAM issues simply regenerate these values by deleting the current information and saving this form.</div></p>
 <p>Topic Box Name: <input type="text" name="cp_frm_topic_box" value="$cp_frm_topic_box" style="width: 200px;"></p>
 <p>Spam Honeypot: <input type="text" name="cp_frm_honeypot" value="$cp_frm_honeypot" style="width: 200px;"></p>
+
+<p><b>Optional:</b> Google reCAPTCHA</p>
+
+<p>This plugin supports Google's reCAPTCHA system.  You'll need to signup for an API key using a Google account (both are free) at <a href="https://www.google.com/recaptcha/admin#site/" target="_blank">https://www.google.com/recaptcha/admin#site/</a> (New window).</p>
+
+<p>Site Key: <input type="text" name="cp_google_recaptcha_site_key" value="$cp_google_recaptcha_site_key" style="width: 300px;"></p>
+<p>Secret Key: <input type="text" name="cp_google_recaptcha_secret_key" value="$cp_google_recaptcha_secret_key" style="width: 300px;"></p>
+
 </div>
 <p><input type="submit" value="Save" class="button"></p>
 </form>
@@ -406,7 +431,9 @@ EOM;
 		$cp_mail_passwd=$cwfa_cp->cwf_san_all($_REQUEST['cp_mail_passwd']);
 		$cp_frm_topic_box=$cwfa_cp->cwf_san_an($_REQUEST['cp_frm_topic_box']);
 		$cp_frm_honeypot=$cwfa_cp->cwf_san_an($_REQUEST['cp_frm_honeypot']);
-
+		$cp_google_recaptcha_site_key=$cwfa_cp->cwf_san_an($_REQUEST['cp_google_recaptcha_site_key']);
+		$cp_google_recaptcha_secret_key=$cwfa_cp->cwf_san_an($_REQUEST['cp_google_recaptcha_secret_key']);
+		
 		$error='';
 
 		if (!$cp_mail_server) {
@@ -448,6 +475,8 @@ EOM;
 			$cp_wp_option_array['cp_mail_passwd']=$cp_mail_passwd;
 			$cp_wp_option_array['cp_frm_topic_box']=$cp_frm_topic_box;
 			$cp_wp_option_array['cp_frm_honeypot']=$cp_frm_honeypot;
+			$cp_wp_option_array['cp_google_recaptcha_site_key']=$cp_google_recaptcha_site_key;
+			$cp_wp_option_array['cp_google_recaptcha_secret_key']=$cp_google_recaptcha_secret_key;
 
 			$cp_wp_option_array=serialize($cp_wp_option_array);
 			$cp_wp_option_chk=get_option($cp_wp_option);
@@ -469,6 +498,12 @@ EOM;
 
 $cw_contact_page_html .=<<<EOM
 <p>The following lists the new changes from version-to-version.</p>
+<p>Version: <b>1.3</b></p>
+<ul style="list-style: disc; margin-left: 25px;">
+<li>Now supports Google's reCAPTCHA program for enhanced anti-spam</li>
+<li>Added site name to email to help with those maintaining multiple sites at same email address</li>
+<li>Fixed: Clearing of user typed data in form when reselecting</li>
+</ul>
 <p>Version: <b>1.2</b></p>
 <ul style="list-style: disc; margin-left: 25px;">
 <li>Background edits to eliminate some PHP notice messages</li>
@@ -505,7 +540,7 @@ Let's review a few key points:
 </ol>
 </div>
 </li>
-<li><p>Now click on the link called <b>Mail Settings & Anti-Spam</b> which is where you setup your sending email account and server along with the Anti-Spam/Bot settings.  The Anti-Spam settings work by creating unique values for your Wordpress site.  The first block generates the field name for the topics list.  If this section is left blank then no message will be sent.  The second block generates what is called a honeypot.  This field must be left blank.  Since many bots will generate a value for every field their submission will fail.  All of this is transparent to your visitors and requires no annoying captchas.</p></li>
+<li><p>Now click on the link called <b>Mail Settings & Anti-Spam</b> which is where you setup your sending email account and server along with the Anti-Spam/Bot settings.  The Anti-Spam settings work by creating unique values for your Wordpress site.  The first block generates the field name for the topics list.  If this section is left blank then no message will be sent.  The second block generates what is called a honeypot.  This field must be left blank.  Since many bots will generate a value for every field their submission will fail.  All of this is transparent to your visitors and requires no annoying captchas.  Finally there are two optional fields for the Google reCAPTCHA program.  If you fill out both the site and security keys this will enable Google's just click I am not a bot box.  So once again no annoying hard to read captcha images.  You'll need to signup for a free API key which the link is provided on the page.  Also if you wish to remove Google's reCAPTCHA simply delete the site and secret keys and save. If you are upgrading from version 1.2 or earlier make sure you visit the <b>Language & Layouts</b> section and click Save to add in the new captcha error text.</p></li>
 <li><p>Next click on the link titled <b>Language & Layouts</b>.  This is where you alter the language displayed in the web form along with the layouts which include the form errors messages, form success message, and which information is displayed and its order.</p>
 <li>Finally add the shortcode <b>[cw_contact_page]</b> to your page(s)/post(s) where you wish the form to be displayed.  It is highly recommended you use a page over a post.  Obviously you may add additional information before and/or after the shortcode as desired.</li>
 </ol>
