@@ -431,8 +431,8 @@ EOM;
 		$cp_mail_passwd=$cwfa_cp->cwf_san_all($_REQUEST['cp_mail_passwd']);
 		$cp_frm_topic_box=$cwfa_cp->cwf_san_an($_REQUEST['cp_frm_topic_box']);
 		$cp_frm_honeypot=$cwfa_cp->cwf_san_an($_REQUEST['cp_frm_honeypot']);
-		$cp_google_recaptcha_site_key=$cwfa_cp->cwf_san_an($_REQUEST['cp_google_recaptcha_site_key']);
-		$cp_google_recaptcha_secret_key=$cwfa_cp->cwf_san_an($_REQUEST['cp_google_recaptcha_secret_key']);
+		$cp_google_recaptcha_site_key=$cwfa_cp->cwf_san_filename($_REQUEST['cp_google_recaptcha_site_key']);
+		$cp_google_recaptcha_secret_key=$cwfa_cp->cwf_san_filename($_REQUEST['cp_google_recaptcha_secret_key']);
 		
 		$error='';
 
@@ -498,6 +498,10 @@ EOM;
 
 $cw_contact_page_html .=<<<EOM
 <p>The following lists the new changes from version-to-version.</p>
+<p>Version: <b>1.4</b></p>
+<ul style="list-style: disc; margin-left: 25px;">
+<li>Altered the way Google's reCAPTCHA keys are handled</li>
+</ul>
 <p>Version: <b>1.3</b></p>
 <ul style="list-style: disc; margin-left: 25px;">
 <li>Now supports Google's reCAPTCHA program for enhanced anti-spam</li>

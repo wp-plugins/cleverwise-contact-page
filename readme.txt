@@ -3,8 +3,8 @@ Contributors: cyberws
 Donate link: http://www.cyberws.com/cleverwise-plugins/
 Tags: contact, page, email, form
 Requires at least: 3.0.1
-Tested up to: 4.2.4
-Stable tag: 1.3
+Tested up to: 4.4
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,9 @@ This plugin deploys Anti-Spam/Bot technology using several methods.  First key f
 
 == Changelog ==
 
+= 1.4 =
+Altered the way Google's reCAPTCHA keys are handled
+
 = 1.3 =
 Now supports Google's reCAPTCHA program for enhanced anti-spam<br>
 Added site name to email to help with those maintaining multiple sites at same email address<br>
@@ -71,5 +74,5 @@ Initial release of plugin
 
 == Upgrade Notice ==
 
-= 1.2 =
-Added Google's reCAPTCHA support plus site name in email along with fixed form clearing error.
+= 1.4 =
+Altered the way Google's reCAPTCHA keys are handled

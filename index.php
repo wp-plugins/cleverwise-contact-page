@@ -2,7 +2,7 @@
 /**
 * Plugin Name: Cleverwise Contact Page
 * Description: Creates a professional contact page including web form (unlimited subjects & departments), emails, phones, faxes, hours, addresses.
-* Version: 1.3
+* Version: 1.4
 * Author: Jeremy O'Connell
 * Author URI: http://www.cyberws.com/cleverwise-plugins/
 * License: GPL2 .:. http://opensource.org/licenses/GPL-2.0
@@ -19,7 +19,7 @@ $cwfa_cp=new cwfa_cp;
 ////////////////////////////////////////////////////////////////////////////
 Global $wpdb,$cp_wp_option_version_txt,$cp_wp_option,$cp_wp_option_version_num;
 
-$cp_wp_option_version_num='1.3';
+$cp_wp_option_version_num='1.4';
 $cp_wp_option='contact_page';
 $cp_wp_option_version_txt=$cp_wp_option.'_version';
 
